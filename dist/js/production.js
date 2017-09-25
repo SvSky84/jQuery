@@ -1,0 +1,1 @@
+console.log("Fichier test"),console.log("Fichier test2"),alert("test2");

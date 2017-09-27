@@ -9,66 +9,65 @@ $(function(){
 	});
 });
 $(function(){
+	var index;
+	var nbImg;
 
-	var interval;
-	let acceptDefil;
-	let valeurAttr;
-	let largeurSlider;
+	nbImg = $('.galerie img').length;
+	
+	function generatePuces(){
+		puces = '<div class="puces">';
 
-	acceptDefil = true;
-	interval = setInterval(defileLeft, 3000);
-
-	largeurSlider = $('.slider').width();
-	$('.slider li').width(largeurSlider);
-
-	$(window).resize(function(){
-		largeurSlider = $('.slider').width();
-		$('.slider li').width(largeurSlider);
-	});
-
-	function defileLeft(){
-		$('.slider ul').animate({'left':-largeurSlider}, 1000, function(){
-			$('.slider li:last').after($('.slider li:first'));
-			$(this).css({'left':0});
-			acceptDefil = true;
-			changeText();
-		});
-	}
-
-	function defileRight(){
-		$('.slider ul').css({'left':-largeurSlider});
-		$('.slider li:first').before($('.slider li:last'));
-		$('.slider ul').animate({'left':0}, 1000, function(){
-			acceptDefil = true;
-			changeText();
-		});
-	}
-
-	function changeText(){
-		valeurAttr = $('.slider li:first img').attr('alt');
-		$('.slider h1').text(valeurAttr);
-	}
-
-	$('.slider .icon-chevron-left').click(function(){
-		if (acceptDefil){
-			acceptDefil = false;
-			defileRight();
+		for(let i = 1 ; i <= nbImg ; i++){
+			puces += '<i class="icon-circle-o"></i>';
 		}
+
+		puces += "</div>";
+
+		$('.lightbox .cadre img').after(puces);
+	}
+
+	function changePuce(){
+		$('.lightbox .puces i').removeClass('icon-circle');
+		$('.lightbox .puces i').eq(index).addClass('icon-circle');
+	}
+
+	function changeImg(){
+		let newSrc = $('.galerie img').eq(index).attr('src');
+		$('.lightbox img').attr('src', newSrc);
+	}
+
+	function change(){
+		changeImg();
+		changePuce();
+	}
+
+	$('.galerie img').click(function(){
+		let src = $(this).attr('src');
+		$('.lightbox img').attr('src', src);
+		$('.lightbox').fadeIn(1000);
+		index = $('.galerie img').index($(this));
+		changePuce();
 	});
 
-	$('.slider .icon-chevron-right').click(function(){
-		if (acceptDefil){
-			acceptDefil = false;
-			defileLeft();
-		}
+	$('.lightbox .icon-close').click(function(){
+		$('.lightbox').fadeOut(1000);
 	});
 
-	$('.slider span').mouseleave(function(){
-		interval = setInterval(defileLeft, 3000);
+	$('.lightbox .icon-chevron-left').click(function(){
+		index = (index - 1 + nbImg)%nbImg;
+		change();
 	});
 
-	$('.slider span').mouseenter(function(){
-		clearInterval(interval);
+	$('.lightbox .icon-chevron-right').click(function(){
+		index = (index + 1)%nbImg;
+		change();
+	});
+
+	generatePuces();
+
+	$(document).on('click', '.lightbox i', function(){
+		index = $(document).find('.lightbox i').index($(this));
+		change();
 	});
 
 });
